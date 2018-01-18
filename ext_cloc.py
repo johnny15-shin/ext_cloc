@@ -9,7 +9,7 @@ import sys
 def usage():
     print "We should hava a directory path."
     print "./ext_cloc direcotry_path"
-    print "example) ./ext_cloc ~/workspace/c300_cheetha/Apps/Src"
+    print "example) ./ext_cloc -ffilename1 -vfilename2"
     exit()
 
 print "######################################################"
@@ -30,10 +30,12 @@ print "######################################################"
 # check argument
 # Get the total number of args passed to this
 total = len(sys.argv)
-if total < 2:
+if total < 3:
     usage()
 
-# check path
+# check path and gathering Directory list
+# -f 고정부 파일 (고정부 Manager Direcotry List가 들어가 있음.)
+# -v 변동부 파일 (변동부 Manager Directory List가 들어가 있음.)
 print ("Directory Path : %s" % str(sys.argv[1]))
 
 
