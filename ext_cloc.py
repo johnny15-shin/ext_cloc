@@ -9,7 +9,7 @@ import sys
 def usage():
     print "We should hava a directory path."
     print "./ext_cloc direcotry_path"
-    print "example) ./ext_cloc -ffilename1 -vfilename2"
+    print "example) ./ext_cloc filename1 filename2"
     exit()
 
 print "######################################################"
@@ -37,6 +37,39 @@ if total < 3:
 # -f 고정부 파일 (고정부 Manager Direcotry List가 들어가 있음.)
 # -v 변동부 파일 (변동부 Manager Directory List가 들어가 있음.)
 print ("Directory Path : %s" % str(sys.argv[1]))
+print ("Directory Path : %s" % str(sys.argv[2]))
+
+
+fixed_list = []
+variant_list = []
+try:
+    fixed_f = open(str(sys.argv[1]), 'r')
+    variant_f = open(str(sys.argv[2]), 'r')
+except IOError as e:
+    print "file open error!"
+    exit()
+
+while True:
+    line = fixed_f.readline()
+    if not line: break;
+    fixed_list.append(line[:-1])        // remove newline
+#    print (line)
+
+while True:
+    line = variant_f.readline()
+    if not line: break;
+    variant_list.append(line[:-1])      // remove newline
+#    print (line)
+
+fixed_f.close()
+variant_f.close()
+
+print fixed_list
+print variant_list
+
+
+
+
 
 
 
