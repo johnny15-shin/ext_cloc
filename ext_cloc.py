@@ -3,6 +3,7 @@
 
 # get argument list using sys module
 import sys
+import os
 
 
 
@@ -40,8 +41,11 @@ print ("Directory Path : %s" % str(sys.argv[1]))
 print ("Directory Path : %s" % str(sys.argv[2]))
 
 
-fixed_list = []
-variant_list = []
+fixed_list = []             # directory path list
+variant_list = []           # directory path list
+fixed_module_list = []      # module name list
+variant_module_list = []    # module name list
+
 try:
     fixed_f = open(str(sys.argv[1]), 'r')
     variant_f = open(str(sys.argv[2]), 'r')
@@ -53,12 +57,14 @@ while True:
     line = fixed_f.readline()
     if not line: break;
     fixed_list.append(line[:-1])        # remove newline
+    fixed_module_list.append(os.path.basename(line[:-1]))
 #    print (line)
 
 while True:
     line = variant_f.readline()
     if not line: break;
     variant_list.append(line[:-1])      # remove newline
+    variant_module_list.append(os.path.basename(line[:-1]))
 #    print (line)
 
 fixed_f.close()
@@ -66,8 +72,10 @@ variant_f.close()
 
 print fixed_list
 print variant_list
+print fixed_module_list
+print variant_module_list
 
-
+os.system ('echo 11111')
 
 
 
