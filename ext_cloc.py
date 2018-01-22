@@ -52,13 +52,13 @@ except IOError as e:
 while True:
     line = fixed_f.readline()
     if not line: break;
-    fixed_list.append(line[:-1])        // remove newline
+    fixed_list.append(line[:-1])        # remove newline
 #    print (line)
 
 while True:
     line = variant_f.readline()
     if not line: break;
-    variant_list.append(line[:-1])      // remove newline
+    variant_list.append(line[:-1])      # remove newline
 #    print (line)
 
 fixed_f.close()
