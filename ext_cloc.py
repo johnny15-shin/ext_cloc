@@ -115,13 +115,15 @@ total_line_ratio = int(round(float(total_fixed_line) / float(total_fixed_line + 
 RESULT_LIST.append(['Total', total_fixed_file, total_variant_file, total_file_ratio, total_fixed_line, total_variant_line, total_line_ratio])
 
 print('============================================================================================================')
-print('   Mgr Name\t    Fixed File\t   Variant File\t   File Ratio\t   Fixed Line\t Variant Line\t   Line Ratio')
+#print('   Mgr Name\t    Fixed File\t   Variant File\t   File Ratio\t   Fixed Line\t Variant Line\t   Line Ratio')
+print('%15s\t%10s\t%10s\t%10s\t%10s\t%10s\t%10s' % ("Mgr Name", "Fixed File", "Variant File", "File Ratio", "Fixed Line", "Variant Line", "Line Ratio" ) )
 for s in RESULT_LIST:
     print('%15s\t%10d\t%10d\t%10d\t%10d\t%10d\t%10d' % (s[0], s[1], s[2], s[3], s[4], s[5], s[6]))
 
 f = open(os.getcwd()+'/output_data.txt', 'w')
 f.write('============================================================================================================\n')
-f.write('   Mgr Name\t    Fixed File\t   Variant File\t   File Ratio\t   Fixed Line\t Variant Line\t   Line Ratio\n')
+#f.write('   Mgr Name\t    Fixed File\t   Variant File\t   File Ratio\t   Fixed Line\t Variant Line\t   Line Ratio\n')
+f.write('%15s\t%10s\t%10s\t%10s\t%10s\t%10s\t%10s \n' % ("Mgr Name", "Fixed File", "Variant File", "File Ratio", "Fixed Line", "Variant Line", "Line Ratio" ) )
 for s in RESULT_LIST:
     f.write('%15s\t%10d\t%10d\t%10d\t%10d\t%10d\t%10d\n' % (s[0], s[1], s[2], s[3], s[4], s[5], s[6]))
 f.close()
