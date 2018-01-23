@@ -1,76 +1,129 @@
 #!/usr/bin/env python
 # =*- coding: UTF-8 -*-
 
+DEBUGGING = True
+
 # get argument list using sys module
 import sys
+import os
 
-
-
-def usage():
-    print "We should hava a directory path."
-    print "./ext_cloc direcotry_path"
-    print "example) ./ext_cloc filename1 filename2"
-    exit()
-
-print "######################################################"
-print "##############  Welcome to Python World  #############"
-print "######################################################"
-
-#
-#git 주소를 받아 소스를 받아 온다 (Option)
-# -- folder 지정으로.
-#지정된 폴더를 찾아 cloc를 수행한다. (csv 파일로 떨굼)
-# -- 실행 위치에 output폴더를 생성하고, 그곳에 manager_date.csv 파일로 남긴다.
-#csv파일을 파싱한다.
-#파일수로 공용부/변동부를 계산한다.
-#라인수로 공용부/변동부를 계산한다.
-#출력한다.
-
-
-# check argument
-# Get the total number of args passed to this
-total = len(sys.argv)
-if total < 3:
-    usage()
-
-# check path and gathering Directory list
-# -f 고정부 파일 (고정부 Manager Direcotry List가 들어가 있음.)
-# -v 변동부 파일 (변동부 Manager Directory List가 들어가 있음.)
-print ("Directory Path : %s" % str(sys.argv[1]))
-print ("Directory Path : %s" % str(sys.argv[2]))
-
-
-fixed_list = []
-variant_list = []
-try:
-    fixed_f = open(str(sys.argv[1]), 'r')
-    variant_f = open(str(sys.argv[2]), 'r')
-except IOError as e:
-    print "file open error!"
-    exit()
-
-while True:
-    line = fixed_f.readline()
-    if not line: break;
-    fixed_list.append(line[:-1])        # remove newline
-#    print (line)
-
-while True:
-    line = variant_f.readline()
-    if not line: break;
-    variant_list.append(line[:-1])      # remove newline
-#    print (line)
-
-fixed_f.close()
-variant_f.close()
-
-print fixed_list
-print variant_list
+if DEBUGGING:
+    print ("User Interest : %s" % str(sys.argv[1]))
 
 
 
 
+#def usage():
+#    print "We should hava a directory path."
+#    print "./ext_cloc direcotry_path"
+#    print "example) ./ext_cloc filename1 filename2"
+#    exit()
 
 
 
+# List contains the final result
+RESULT_LIST = []
 
+# Current Directory
+CURRENT_DIR = os.getcwd()
+# Output Directory for cloc output csv files
+OUTPUT_DIR = 'CLOC_OUTPUT'
+
+# Get list of Directory in CURRENT_DIR
+file_list = os.listdir(CURRENT_DIR)
+file_list.sort()
+
+# Get Ready for making output files
+if any(OUTPUT_DIR in s for s in file_list):
+    print ("Remove Existing Files")
+    os.system('rm -rf %s' % OUTPUT_DIR)
+    os.system('mkdir %s' % OUTPUT_DIR)
+else:
+    os.system('mkdir %s' % OUTPUT_DIR)
+
+os.system('rm output_data.txt')
+
+# Making User Interest List
+user_interest_list = []
+for item in file_list:
+    if item.find(str(sys.argv[1])) is not -1:
+        user_interest_list.append(item)
+
+if DEBUGGING:
+    print user_interest_list
+
+# Generate CSV output files
+for item in user_interest_list:
+    os.system('cloc ./%s --csv --out=./%s/%s_output.csv' % (item, OUTPUT_DIR, item))
+    os.system('cloc ./CheetahVariants/%sVariant --csv --out=./%s/%sVariant_output.csv' % (item, OUTPUT_DIR, item))
+
+# data processing
+for mgr in user_interest_list:
+    try:
+        fixed_file_num = 0
+        fixed_line_num = 0
+        f_fixed = open(os.getcwd()+'/'+OUTPUT_DIR+'/'+mgr+'_output.csv')
+        line = f_fixed.readline()
+        while True:
+            line = f_fixed.readline()
+            if not line: break
+            line = line[:-1]
+            temp_list = line.split(',')
+            if ((temp_list[1] == 'C++') or (temp_list[1] == 'C/C++ Header') or (temp_list[1] == 'C')):
+                fixed_file_num += int(temp_list[0])
+                fixed_line_num += int(temp_list[4])
+        f_fixed.close()
+    except IOError as e:
+        pass
+
+    try:
+        variant_file_num = 0
+        variant_line_num = 0
+        f_variant = open(os.getcwd()+'/'+OUTPUT_DIR+'/'+mgr+'Variant_output.csv')
+        line = f_variant.readline()
+        while True:
+            line = f_variant.readline()
+            if not line: break
+            line = line[:-1]
+            temp_list = line.split(',')
+            if ((temp_list[1] == 'C++') or (temp_list[1] == 'C/C++ Header') or (temp_list[1] == 'C')):
+                variant_file_num += int(temp_list[0])
+                variant_line_num += int(temp_list[4])
+        f_variant.close()
+    except IOError as e:
+        pass
+
+    file_ratio = int(round(float(fixed_file_num) / float(fixed_file_num + variant_file_num), 2)*100)
+    line_ratio = int(round(float(fixed_line_num) / float(fixed_line_num + variant_line_num), 2)*100)
+
+    data_list = [mgr, fixed_file_num, variant_file_num, file_ratio, fixed_line_num, variant_line_num, line_ratio]
+    RESULT_LIST.append(data_list)
+
+total_fixed_file = 0
+total_fixed_line = 0
+total_variant_file = 0
+total_variant_line = 0
+for s in RESULT_LIST:
+    total_fixed_file += s[1]
+    total_variant_file += s[2]
+    total_fixed_line += s[4]
+    total_variant_line += s[5]
+
+total_file_ratio = int(round(float(total_fixed_file) / float(total_fixed_file + total_variant_file), 2)*100)
+total_line_ratio = int(round(float(total_fixed_line) / float(total_fixed_line + total_variant_line), 2)*100)
+
+RESULT_LIST.append(['Total', total_fixed_file, total_variant_file, total_file_ratio, total_fixed_line, total_variant_line, total_line_ratio])
+
+print('============================================================================================================')
+print('   Mgr Name\t    Fixed File\t   Variant File\t   File Ratio\t   Fixed Line\t Variant Line\t   Line Ratio')
+for s in RESULT_LIST:
+    print('%15s\t%10d\t%10d\t%10d\t%10d\t%10d\t%10d' % (s[0], s[1], s[2], s[3], s[4], s[5], s[6]))
+
+f = open(os.getcwd()+'/output_data.txt', 'w')
+f.write('============================================================================================================\n')
+f.write('   Mgr Name\t    Fixed File\t   Variant File\t   File Ratio\t   Fixed Line\t Variant Line\t   Line Ratio\n')
+for s in RESULT_LIST:
+    f.write('%15s\t%10d\t%10d\t%10d\t%10d\t%10d\t%10d\n' % (s[0], s[1], s[2], s[3], s[4], s[5], s[6]))
+f.close()
+
+os.system('rm -rf %s' % OUTPUT_DIR)
